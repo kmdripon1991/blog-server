@@ -1,5 +1,8 @@
 # Blog Project
 
+[Blog Server Link](https://blog-server-three-sand.vercel.app) - https://blog-server-three-sand.vercel.app
+
+
 ## Overview
 
 This project is a backend system for a blogging platform with two user roles: **Admin** and **User**. The system enables users to perform CRUD operations on blogs and provides admins with special permissions for managing users and their blogs. The platform features secure authentication, role-based access control, and a public API for searching, sorting, and filtering blogs.
@@ -21,8 +24,9 @@ This guide provides the steps to set up a Node.js project with TypeScript, Mongo
 
 In the user module, interface, model, route, controller and service files have been created. The user routes have been declared in the user route. The controller has been called from the router file. Again, the controller file calls the service file. The user registration and login work has been completed in the service file. The `zod validation` is used for user model data validation
 
-Register User API:.............
-Login User API:................
+[Register User API](https://blog-server-three-sand.vercel.app/api/auth/register) - https://blog-server-three-sand.vercel.app/api/auth/register
+
+[Login User API](https://blog-server-three-sand.vercel.app/api/auth/login) - https://blog-server-three-sand.vercel.app/api/auth/login
 
 ---
 
@@ -30,10 +34,15 @@ Login User API:................
 
 In the blog module, interface, model, route, controller, service, constant files have been created. The blog routes have been declared in the blog route. The controller has been called from the router file. Again, the controller file calls the service file. The user registration and login work has been completed in the service file. The `zod validation` is used for user model data validation
 
-Create Blog API:.........................
-Update Blog API:.........................
-Delete Blog API:............................
-Get All Blogs API:.........................
+[Create Blog API](https://blog-server-three-sand.vercel.app/api/blogs/) - https://blog-server-three-sand.vercel.app/api/blogs/
+
+[Update Blog API](https://blog-server-three-sand.vercel.app/api/blogs/id) - https://blog-server-three-sand.vercel.app/api/blogs/id
+
+[Delete Blog API](https://blog-server-three-sand.vercel.app/api/blogs/id) - https://blog-server-three-sand.vercel.app/api/blogs/id
+
+[Get All Blogs API](https://blog-server-three-sand.vercel.app/api/blogs/) - https://blog-server-three-sand.vercel.app/api/blogs/
+
+[For Query API](https://blog-server-three-sand.vercel.app/api/blogs?search=technology&sortOrder=desc&sortBy=createdAt&filter=authorId) - https://blog-server-three-sand.vercel.app/api/blogs?search=technology&sortOrder=desc&sortBy=createdAt&filter=authorId
 
 ---
 
@@ -41,58 +50,67 @@ Get All Blogs API:.........................
 
 In the admin module, admin route, controller and service file have been created. Admin action tasks have been completed from the service file.
 
-[User Block by Admin](https://www.google.com) - https://www.google.com
-
 Only an Admin can block a user by updating the user field `isBlocked` property `true`.
 
-[Any Blogs can be deleted Admin](https://www.google.com) - https://www.google.com
+[User Block by Admin](https://blog-server-three-sand.vercel.app/api/admin/users/userId/block) - https://blog-server-three-sand.vercel.app/api/admin/users/userId/block
 
-Only an Admin can block a user by updating the user field `isBlocked` property `true`.
+Only an Admin can delete any user blog.
 
----
-
-## Features and Requirements
-
-### 1. User Roles
-
-#### Admin
-
-- Created manually in the database with predefined credentials.
-- Permissions:
-  - **Delete any blog.**
-  - **Block any user** by setting the `isBlocked` flag.
-- Cannot update blogs.
-
-#### User
-
-- Can **register** and **log in**.
-- Permissions:
-  - **Create blogs** (only when logged in).
-  - **Update and delete their own blogs.**
-- Cannot perform admin actions.
+[Any Blogs can be deleted Admin](http://localhost:5000/api/admin/blogs/blogId) - http://localhost:5000/api/admin/blogs/blogId
 
 ---
 
-### 2. Authentication and Authorization
+## catchAsync Function
 
-- **Authentication:** Users must log in to perform write, update, and delete operations.
-- **Authorization:** Differentiated roles (Admin/User) with secure permissions.
+This is an higher order function thats take an asynchronous function as an argument. It returns a new function. When a unhandled promise or errors occurred, its catches automatically and forward the next middleware as well as global error handler.
 
----
+## Middlewares
 
-### 3. Blog API
+### Auth middlewares
 
-#### Public API for Reading Blogs
+This is an custom middleware. It used for Authentication and Authorizations.Verifying the `JWT` token, Auth middleware ensure the user is valid and then give access the protected route.
 
-- Includes blog title, content, and author name.
-- Features:
-  - **Search**: Search by blog title or content.
-  - **Sort**: Sort blogs by fields such as `createdAt` or `title`.
-  - **Filter**: Filter blogs by author ID.
+- **Following functionalities in this middleware**
+  - **JWT Token Verification**
+  - **JDecoded JWT and Extract Data**
+  - **JDecoded JWT and Extract Data**
+  - **Lookup user in the Database**
+  - **Checking if User is Blocked**
+  - **UseR Role Authorized by**
+  - **Attached User to the Request Object**
+  - **And Error Handle**
 
----
+### Global Error Handler
 
-## Models
+In Express Js global error handler is a middleware function. When a application throw an error , global error middleware function intercepts the error, process them and send a response to the client with appropriate response.Centralized the errors and make code cleaner.
+
+  - **Zod Error**
+  - **Validation Error**
+  - **CastError**
+  - **Duplicate Key Error**
+  - **AppError**
+  - **Generic Error**
+  
+  Finally, Sending error response, Export this middleware and Integrate this middleware in the `app.ts` file.
+
+
+### Not Found Error middleware
+
+The `notFound` middleware handles thats route which are not define in the application.After passing through all other routes and middleware, the `notFound` middleware intercepts the request and send response to the client `404 Not Found`.This middleware does not call `next()`.
+This middleware integrate in the `app.ts`after calling all routes before calling global error middleware.
+
+### Validation Request middleware
+
+The ValidateRequest middleware validates the incoming request against a provided Zod schema. It validate the requested body data structure , which is pre-defined.If fails to validate , this middleware thrown an error, which handled by global error handler.
+
+### `QueryBuilder` Class
+
+This is a generic utility class for `mongodb` queries with `mongoose`.It simplifies the process of searching, filtering, sorting data based on query object.Constructor accepts mongoose `modelQuery` and a query object.Check if a `search` parameter exists in the query.And  logic for partial match and case-insensitive
+
+Filters the query by specific criteria, excluding non-filter-related fields (like `search`, `sortBy`, `sortOrder`)
+
+Sorts the query results by a specified field and order.Use `sortBy`to determine field to sort which default value is set createdAt.Also use `sortOrder` to determine the order. ascending (default) or descending
+
 
 ### User Model
 
@@ -119,134 +137,3 @@ Only an Admin can block a user by updating the user field `isBlocked` property `
 
 ---
 
-## API Endpoints
-
-### 1. Authentication
-
-#### 1.1 Register User
-
-**POST** `/api/auth/register`
-
-Registers a new user.
-
-Request Body:
-
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "securepassword"
-}
-```
-
-### 1.2 Login User
-
-**Endpoint:**  
-`POST /api/auth/login`
-
-**Description:**  
-Authenticates a user with their email and password and generates a JWT token.
-
----
-
-#### **Request Body:**
-
-```json
-{
-  "email": "john@example.com",
-  "password": "securepassword"
-}
-```
-
-# Blog Management System
-
-## 2. Blog Management
-
-### 2.1 Create Blog
-
-**Endpoint:**  
-`POST /api/blogs`
-
-**Description:**  
-Allows a logged-in user to create a blog.
-
----
-
-### 2.2 Update Blog
-
-**Endpoint:**  
-`PATCH /api/blogs/:id`
-
-**Description:**  
-Allows a logged-in user to update their own blog.
-
----
-
-### 2.3 Delete Blog
-
-**Endpoint:**  
-`DELETE /api/blogs/:id`
-
-**Description:**  
-Allows a logged-in user to delete their own blog.
-
----
-
-### 2.4 Get All Blogs (Public)
-
-**Endpoint:**  
-`GET /api/blogs`
-
-**Description:**  
-Fetches all blogs with options for:
-
-- **Search:** Search by `title` or `content`.
-- **Sort:** Sort by specific fields like `createdAt`.
-- **Filter:** Filter by `author ID`.
-
----
-
-## 3. Admin Actions
-
-### 3.1 Block User
-
-**Endpoint:**  
-`PATCH /api/admin/users/:userId/block`
-
-**Description:**  
-Allows an admin to block a user.
-
----
-
-### 3.2 Delete Blog
-
-**Endpoint:**  
-`DELETE /api/admin/blogs/:id`
-
-**Description:**  
-Allows an admin to delete any blog.
-
----
-
-## 4. Error Handling
-
-Consistent error responses ensure meaningful feedback to users. The following error types are managed:
-
-- **Zod Validation Error:** Invalid data inputs based on Zod schemas.
-- **Not Found Error:** Requested resources not found.
-- **Validation Error:** General validation issues.
-- **Authentication Error:** Failed login or invalid token.
-- **Authorization Error:** Insufficient permissions.
-- **Internal Server Error:** Unhandled or unexpected server issues.
-
-**Error Response Format:**
-
-```json
-{
-  "success": false,
-  "message": "Error message",
-  "statusCode": 400,
-  "error": { "details": "Additional details" },
-  "stack": "Error stack trace (if available)"
-}
-```
