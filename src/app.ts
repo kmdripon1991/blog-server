@@ -3,6 +3,7 @@ import cors from 'cors';
 import router from './app/routes/routes';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import cookieParser from 'cookie-parser';
+import notFound from './app/middlewares/notFound';
 
 const app: Application = express();
 
@@ -16,7 +17,10 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!');
 });
 
-//global error handler
+//not found middleware
+app.use(notFound);
+
+// Error-handling middleware
 app.use(globalErrorHandler);
 
 export default app;
