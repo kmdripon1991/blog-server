@@ -39,32 +39,6 @@ const Auth = (...requiredRoles: TUserRole[]) => {
 
     req.user = decoded;
     next();
-
-    // jwt.verify(
-    //   token,
-    //   config.jwt_access_secret as string,
-    //   function (err, decoded) {
-    //     // err
-    //     if (err) {
-    //       throw new AppError(
-    //         StatusCodes.UNAUTHORIZED,
-    //         'You are not Authorized!!!',
-    //       );
-    //     }
-
-    //     const role = (decoded as JwtPayload).role;
-    //     if (requiredRoles && !requiredRoles.includes(role)) {
-    //       throw new AppError(
-    //         StatusCodes.UNAUTHORIZED,
-    //         'You are not Authorized!!!',
-    //       );
-    //     }
-
-    //     // decoded undefined
-    //     req.user = decoded as JwtPayload;
-    //     next();
-    //   },
-    // );
   });
 };
 export default Auth;
